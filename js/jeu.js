@@ -28,10 +28,19 @@ for(var i=0 ; i<img_cartes.length; i++)
   img_cartes[i].onclick = function(){controlJeu(this.num_carte);};
 }
 
+//---------------------------------------------------//
+//--- Variables nécéssaires au chronomètre du jeu ---//
+//---------------------------------------------------//
+// récupération de chrono
+let chrono = document.getElementById("chrono");
+let minutes = 0;
+let secondes = 0;
+let chronoEstArrete =  true;
+let timeout;
 
-//------------------//
-//--- Fonctiones ---//
-//------------------//
+//-----------------//
+//--- Fonctions ---//
+//-----------------//
 
 
 // fonction permettant de calculer de ùamnière aléatoire un nombre entre 1 et Nb
@@ -65,6 +74,9 @@ function initialiseJeu(){
     contenu_cartes.push(numero_cartes[choix]);
     cartes_deja_mise.push(choix);
   }
+  //démarrage du chronomètre
+  chronoEstArrete = false;
+  demarrerTemps();
 }
 
 function maj_affichage(num_carte){
@@ -89,19 +101,31 @@ function maj_affichage(num_carte){
   }
 }
 
-// function permettant de terminer la partie et de rejouer
-function rejouer(){
+function perdu(){
+  // Message de félicitation aprè sune courte pause
+  alert("c'est PERDU !!!");
+  rejouer();
+}
+
+function gagne(){
   // On affiche le feu d'artifice partout (en réafichant les cartes)
   setTimeout(function(){
     // Message de félicitation aprè sune courte pause
     alert("c'est gagné !!!");
     // On recharge une partie après click sur OK
-    location.reload()
+    rejouer();
   }, 700);
   for (var i=0 ; i<img_cartes.length ; i++){
     img_cartes[i].style.border="";
     img_cartes[i].src="../images/win.jpg";
   }
+  // On arret le chrono
+  chronoEstArrete = true;
+}
+
+// function permettant de terminer la partie et de rejouer
+function rejouer(){
+  location.reload()
 }
 
 function controlJeu(num_carte){
@@ -144,11 +168,47 @@ function controlJeu(num_carte){
         if(score === 6){
           // si on a atteint le score maxi (6 paires)
           // => on fini le partie et on rejoue
-          rejouer();
+          gagne();
         }
       }, 700);
     }
   }
+}
+
+function demarrerTemps(){
+
+  if (chronoEstArrete) return; 
+
+  // on convertie nos données en chiffre pour éviter toutes erreures
+  minutes = parseInt(minutes);
+  secondes = parseInt(secondes);
+
+  secondes++;
+
+  if (secondes === 60){
+    minutes++;
+    secondes = 0;
+  }
+
+  //--- affichage ---//
+  // on veut toujours deux chiffres en affichage
+  if(secondes < 10){
+    secondes = "0" + secondes;
+  }
+
+  if(minutes < 10){
+    minutes = "0" + minutes;
+  }
+
+  console.log(minutes , secondes);
+  if((minutes === "01") && (secondes === "01")){
+    perdu();
+  }
+
+  // affichage dans le dom
+  chrono.textContent = `${minutes}min ${secondes}s`
+
+  timeout = setTimeout(demarrerTemps, 1000);
 }
 
 
