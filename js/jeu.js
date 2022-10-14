@@ -37,6 +37,7 @@ let minutes = 0;
 let secondes = 0;
 let chronoEstArrete =  true;
 let timeout;
+let identity;
 
 //-----------------//
 //--- Fonctions ---//
@@ -87,6 +88,7 @@ function initialiseJeu(){
   // mise à 0 du chrono est démarrage
   chronoEstArrete = false;
   demarrerTemps();
+  progessBar();
 }
 
 function maj_affichage(num_carte){
@@ -131,6 +133,7 @@ function gagne(){
   }
   // On arret le chrono
   chronoEstArrete = true;
+  clearInterval(identity);
 }
 
 // function permettant de terminer la partie et de rejouer
@@ -227,5 +230,24 @@ function demarrerTemps(){
   timeout = setTimeout(demarrerTemps, 1000);
 }
 
+// fonctino qui gère la progression de la barre de progression
+function progessBar() {
+  var element = document.getElementById("myprogressBar");   
+  var width = 0;
+  // interval de progression : un appel de la fuinction scene() toutes les 100ms
+  identity = setInterval(scene, 100); //100
+  // fonction qui fait progresser physiquement la barre 
+  function scene() {
+    if (width >= 100) {
+      clearInterval(identity);
+      console.log("fini");
+      perdu();
+      
+    } else {
+      width = width+0.25;
+      element.style.width = width + '%'; 
+    }
+  }
+}
 
 initialiseJeu();

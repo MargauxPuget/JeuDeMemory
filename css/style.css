@@ -25,3 +25,21 @@ h1{
     margin: 10px;
     border-radius: 5px;
 }
+
+
+#Progress_Status {
+    margin: 10px 0px;
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 5px;
+}
+
+#myprogressBar {
+    width: 1%;
+    height: 35px;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 32px;
+    color: black;
+    border-radius: 5px;
+}
