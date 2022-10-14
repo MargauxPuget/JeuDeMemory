@@ -58,6 +58,25 @@
         </footer>
 
     </div>
-    <script src="../js/jeu.js"></script>
+    <script type="text/javascript" src="../js/jeu.js"></script>
+    <script type="text/javascript">
+
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          //document.getElementById("time").innerHTML = this.responseText;
+          console.log(this.responseText);
+          let results =  JSON.parse(this.responseText);
+          //todo verifier la taille de results s'il est vide attention
+          console.log(results.lenght);
+          document.getElementById("time").innerHTML = results[0].score;
+          }
+        };
+
+      xhttp.open("GET", "../api/leaderboard.php", true);
+      xhttp.send();
+
+    </script>
 </body>
 </html>
