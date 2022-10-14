@@ -54,6 +54,10 @@ function nb_aleatoire(nb){
 }
 
 function initialiseJeu(){
+  // réinitialisation
+  score = 0;
+  etats_des_cartes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  contenu_cartes = [];
 
   var nb_total_cartes = numero_cartes.length;
   // pour mémoriser les places des cartes déjà mises
@@ -74,7 +78,13 @@ function initialiseJeu(){
     contenu_cartes.push(numero_cartes[choix]);
     cartes_deja_mise.push(choix);
   }
-  //démarrage du chronomètre
+
+  for (var i=0 ; i<img_cartes.length ; i++){
+    img_cartes[i].src="../images/back.png";
+    img_cartes[i].style.border="";
+  }
+
+  // mise à 0 du chrono est démarrage
   chronoEstArrete = false;
   demarrerTemps();
 }
@@ -125,7 +135,12 @@ function gagne(){
 
 // function permettant de terminer la partie et de rejouer
 function rejouer(){
-  location.reload()
+  //location.reload()
+
+  clearTimeout(timeout);
+  secondes=0;
+  minutes=0;
+  initialiseJeu(); 
 }
 
 function controlJeu(num_carte){
@@ -200,6 +215,7 @@ function demarrerTemps(){
     minutes = "0" + minutes;
   }
 
+  // le chrono nous coup à 1 minute et 0 seconde
   console.log(minutes , secondes);
   if((minutes === "01") && (secondes === "01")){
     perdu();
