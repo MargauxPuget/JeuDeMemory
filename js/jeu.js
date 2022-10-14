@@ -40,6 +40,28 @@ let secondes = 0;
 let chronoEstArrete =  true;
 let timeout;
 
+
+//-------------------------------------------------------------//
+//--- Variables nécéssaires à la création du plateau de jeu ---//
+//-------------------------------------------------------------//
+// récupération des buttons
+let btn3 = document.getElementById("paires3");
+let btn6 = document.getElementById("paires6");
+let btn8 = document.getElementById("paires8");
+let btn10 = document.getElementById("paires10");
+let btn12 = document.getElementById("paires12");
+let btn15 = document.getElementById("paires15");
+let btn18 = document.getElementById("paires18");
+// écoute de l'évènement click
+btn3.addEventListener("click", function(){creationPlateau(2, 3)});
+btn6.addEventListener("click", function(){creationPlateau(3, 4)});
+btn8.addEventListener("click", function(){creationPlateau(4, 4)});
+btn10.addEventListener("click", function(){creationPlateau(4, 5)});
+btn12.addEventListener("click", function(){creationPlateau(4, 6)});
+btn15.addEventListener("click", function(){creationPlateau(5, 6)});
+btn18.addEventListener("click", function(){creationPlateau(6, 6)});
+
+
 //-----------------//
 //--- Fonctions ---//
 //-----------------//
@@ -60,6 +82,9 @@ function initialiseJeu(){
   score = 0;
   etats_des_cartes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   contenu_cartes = [];
+  clearTimeout(timeout);
+  secondes=0;
+  minutes=0;
 
   var nb_total_cartes = numero_cartes.length;
   // pour mémoriser les places des cartes déjà mises
@@ -173,9 +198,6 @@ function maj_score(){
 function rejouer(){
   //location.reload()
 
-  clearTimeout(timeout);
-  secondes=0;
-  minutes=0;
   initialiseJeu(); 
 }
 
@@ -263,5 +285,41 @@ function demarrerTemps(){
   timeout = setTimeout(demarrerTemps, 1000);
 }
 
+function creationPlateau(lignes, colonnes){
 
-initialiseJeu();
+  let parent = document.getElementById("cartes");
+  //suppression de tous les enfants.
+  parent.innerHTML='';
+
+  for(var i=0 ; i<lignes; i++)
+  {
+    // créer une ligne
+    var nouvelleLigne = document.createElement("tr");
+    //créer les colonnes
+    for(var j=0 ; j<colonnes; j++)
+      {
+        // créer une colonne
+        var nouvelleColonne = document.createElement("td");
+
+        // créer une img
+        var nouvelleImg = document.createElement("img");
+        // ajouter une class
+        nouvelleImg.classList.add("back");
+        nouvelleImg.src="../images/back.png";
+        nouvelleImg.alt="verso de la carte";
+        
+
+        // ajouter l'img dans le colonne
+        var imgAjoute = nouvelleColonne.appendChild(nouvelleImg);
+
+        // ajouter la colonne dans la ligne
+        var colonneAjoute = nouvelleLigne.appendChild(nouvelleColonne);
+      }
+    // l'ajouter dans le dom
+    var ligneAjoute = parent.appendChild(nouvelleLigne);
+  }
+
+  initialiseJeu();
+}
+
+//initialiseJeu();
