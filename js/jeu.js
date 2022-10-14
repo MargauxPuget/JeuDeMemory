@@ -149,7 +149,6 @@ function compareBestTime(){
     bestTime[0] = minutes;
     bestTime[1] = secondes;
   } 
-  console.log("bestTime", bestTime[0], bestTime[1]);
   if (minutes === bestTime[0]) {
     if (secondes < bestTime[1]){
       bestTime[0] = minutes;
@@ -266,15 +265,12 @@ function recupBDD(){
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      //document.getElementById("time").innerHTML = this.responseText;
-      console.log(this.responseText);
       let results =  JSON.parse(this.responseText);
-      //todo verifier la taille de results s'il est vide attention
-        if(results.length>0){
-          document.getElementById("time").innerHTML = results[0].score + " secondes";
-        }
+      if(results.length>0){
+        document.getElementById("time").innerHTML = results[0].score + " secondes";
       }
-    };
+    }
+  };
 
   xhttp.open("GET", "../api/leaderboard.php", true);
   xhttp.send();
@@ -290,7 +286,6 @@ function postScore(scoreValue) {
   xhr.open('POST', "../api/leaderboard.php");
   xhr.onreadystatechange = function() {
     if (xhr.readyState>3 && xhr.status==200) { 
-      console.log(xhr.responseText);
       recupBDD();
     }
   };
