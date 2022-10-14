@@ -133,6 +133,11 @@ function gagne(){
   chronoEstArrete = true;
 }
 
+function maj_score(){
+  var element = document.getElementById("score");
+  element.textContent =score;
+}
+
 // function permettant de terminer la partie et de rejouer
 function rejouer(){
   //location.reload()
@@ -168,6 +173,7 @@ function controlJeu(num_carte){
         // => score augmente 
         nouvel_etat = -1;
         score++;
+        maj_score();
       }
       // on change l'état des cartes si nécéssaire
       etats_des_cartes[cartes_retournees[0]]= nouvel_etat;
@@ -216,7 +222,6 @@ function demarrerTemps(){
   }
 
   // le chrono nous coup à 1 minute et 0 seconde
-  console.log(minutes , secondes);
   if((minutes === "01") && (secondes === "01")){
     perdu();
   }
