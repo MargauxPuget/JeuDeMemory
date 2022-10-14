@@ -134,7 +134,7 @@ function gagne(){
   // On arret le chrono
   chronoEstArrete = true;
 
-  compareBestTime();
+  postScore(parseInt(minutes)*60 + parseInt(secondes));
 }
 
 // fonction qui compare le temps de la partie qui vient de finir à la meilleur
@@ -159,7 +159,6 @@ function compareBestTime(){
 
   // affichage
   // affichage dans le dom
-
   let bestT = document.getElementById("time");
   bestT.textContent = `${bestTime[0]}min ${bestTime[1]}s`
 }
@@ -274,7 +273,6 @@ function recupBDD(){
         if(results.length>0){
           document.getElementById("time").innerHTML = results[0].score + " secondes";
         }
-      
       }
     };
 
@@ -282,9 +280,23 @@ function recupBDD(){
   xhttp.send();
 }
 
-function insertBDD(){
-  // la base de donnée récupère un temps en secondes.
-  var insertChrono = minutes*60 + secondes;
+function postScore(scoreValue) {
+  var paramObj = { score: scoreValue };
+  var params = Object.keys(paramObj).map(
+    function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(paramObj[k]) }
+  ).join('&');
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', "../api/leaderboard.php");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState>3 && xhr.status==200) { 
+      console.log(xhr.responseText);
+      recupBDD();
+    }
+  };
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.send(params);
+  return xhr;
 }
 
 initialiseJeu();
