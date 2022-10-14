@@ -263,5 +263,29 @@ function demarrerTemps(){
   timeout = setTimeout(demarrerTemps, 1000);
 }
 
+function recupBDD(){
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //document.getElementById("time").innerHTML = this.responseText;
+      console.log(this.responseText);
+      let results =  JSON.parse(this.responseText);
+      //todo verifier la taille de results s'il est vide attention
+        if(results.length>0){
+          document.getElementById("time").innerHTML = results[0].score + " secondes";
+        }
+      
+      }
+    };
+
+  xhttp.open("GET", "../api/leaderboard.php", true);
+  xhttp.send();
+}
+
+function insertBDD(){
+  // la base de donnée récupère un temps en secondes.
+  var insertChrono = minutes*60 + secondes;
+}
 
 initialiseJeu();
+recupBDD();
