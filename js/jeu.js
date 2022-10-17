@@ -16,6 +16,8 @@ let etats_des_cartes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 let cartes_retournees = [];
 // Nb de pair trouvées
 let score = 0;
+//tableau du meilleur temps [minutes, secondes]
+let bestTime = ["",""];
 
 // récupération des données des cartes "img" dans le tableau "cards"
 let img_cartes = document.getElementById("cartes").getElementsByTagName("img");
@@ -134,6 +136,39 @@ function gagne(){
   // On arret le chrono
   chronoEstArrete = true;
   clearInterval(identity);
+  postScore(parseInt(minutes)*60 + parseInt(secondes));
+}
+
+//todo a garder ??
+// fonction qui compare le temps de la partie qui vient de finir à la meilleur
+function compareBestTime(){
+
+  // si aucune partie n'a était gagnée au paravent
+  if ((bestTime[0] === "") && (bestTime[1] === "")){
+    bestTime[0] = minutes;
+    bestTime[1] = secondes;
+  }
+  if (minutes < bestTime[0]) {
+    bestTime[0] = minutes;
+    bestTime[1] = secondes;
+  } 
+  if (minutes === bestTime[0]) {
+    if (secondes < bestTime[1]){
+      bestTime[0] = minutes;
+      bestTime[1] = secondes;
+    }
+  }
+
+  // affichage
+  // affichage dans le dom
+  let bestT = document.getElementById("time");
+  bestT.textContent = `${bestTime[0]}min ${bestTime[1]}s`
+}
+
+function maj_score(){
+  var element = document.getElementById("score");
+  element.textContent =score;
+
 }
 
 // function permettant de terminer la partie et de rejouer
@@ -171,6 +206,7 @@ function controlJeu(num_carte){
         // => score augmente 
         nouvel_etat = -1;
         score++;
+        maj_score();
       }
       // on change l'état des cartes si nécéssaire
       etats_des_cartes[cartes_retournees[0]]= nouvel_etat;
@@ -218,8 +254,10 @@ function demarrerTemps(){
     minutes = "0" + minutes;
   }
 
+  // démarrage est mise à jour de la progresse bar 
+  progessBar(number);
+
   // le chrono nous coup à 1 minute et 0 seconde
-  console.log(minutes , secondes);
   if((minutes === "01") && (secondes === "01")){
     perdu();
   }
@@ -231,23 +269,68 @@ function demarrerTemps(){
 }
 
 // fonctino qui gère la progression de la barre de progression
-function progessBar() {
+function progessBar(number) {
   var element = document.getElementById("myprogressBar");   
   var width = 0;
   // interval de progression : un appel de la fuinction scene() toutes les 100ms
-  identity = setInterval(scene, 100); //100
+  identity = scene(number); //100
   // fonction qui fait progresser physiquement la barre 
-  function scene() {
+  function scene(number) {
     if (width >= 100) {
       clearInterval(identity);
       console.log("fini");
       perdu();
       
     } else {
-      width = width+0.25;
+
+      width = (number*100)/60;
       element.style.width = width + '%'; 
     }
   }
 }
+  
+// récupération et affichahge du meilleur score de la base de donnée
+function recupBDD(){
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      let results =  JSON.parse(this.responseText);
+      if(results.length>0){
+        document.getElementById("time").innerHTML = majTiming(results[0].score);
+      }
+    }
+  };
+
+  xhttp.open("GET", "../api/leaderboard.php", true);
+  xhttp.send();
+}
+
+function majTiming(time){
+  // trouver les minutes
+  let minutes = Math.trunc(time/60);
+  // trouver les secondes
+  let secondes = time%60;
+  return minutes + " min " + secondes + " s ! ";
+}
+
+// envoye d'un nouveau score en base de donnée
+function postScore(scoreValue) {
+  var paramObj = { score: scoreValue };
+  var params = Object.keys(paramObj).map(
+    function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(paramObj[k]) }
+  ).join('&');
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', "../api/leaderboard.php");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState>3 && xhr.status==200) { 
+      recupBDD();
+    }
+  };
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.send(params);
+  return xhr;
+}
 
 initialiseJeu();
+recupBDD();

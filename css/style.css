@@ -24,6 +24,7 @@ h1{
     background-color: lightgreen;
     margin: 10px;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 
@@ -43,3 +44,4 @@ h1{
     color: black;
     border-radius: 5px;
 }
+
