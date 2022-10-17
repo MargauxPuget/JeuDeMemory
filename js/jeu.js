@@ -8,8 +8,6 @@ let contenu_cartes = [];
 let cartes_retournees = [];
 // Nb de pair trouvées
 let score = 0;
-//tableau du meilleur temps [minutes, secondes]
-let bestTime = ["",""];
 // récupération des données des cartes "img" dans le tableau "cards"
 let img_cartes = document.getElementById("cartes").getElementsByTagName("img");
 
@@ -171,30 +169,30 @@ function gagne(){
   postScore(parseInt(minutes)*60 + parseInt(secondes));
 }
 
-// fonction qui compare le temps de la partie qui vient de finir à la meilleur
-function compareBestTime(){
+// // fonction qui compare le temps de la partie qui vient de finir à la meilleur
+// function compareBestTime(){
 
-  // si aucune partie n'a était gagnée au paravent
-  if ((bestTime[0] === "") && (bestTime[1] === "")){
-    bestTime[0] = minutes;
-    bestTime[1] = secondes;
-  }
-  if (minutes < bestTime[0]) {
-    bestTime[0] = minutes;
-    bestTime[1] = secondes;
-  } 
-  if (minutes === bestTime[0]) {
-    if (secondes < bestTime[1]){
-      bestTime[0] = minutes;
-      bestTime[1] = secondes;
-    }
-  }
+//   // si aucune partie n'a était gagnée au paravent
+//   if ((bestTime[0] === "") && (bestTime[1] === "")){
+//     bestTime[0] = minutes;
+//     bestTime[1] = secondes;
+//   }
+//   if (minutes < bestTime[0]) {
+//     bestTime[0] = minutes;
+//     bestTime[1] = secondes;
+//   } 
+//   if (minutes === bestTime[0]) {
+//     if (secondes < bestTime[1]){
+//       bestTime[0] = minutes;
+//       bestTime[1] = secondes;
+//     }
+//   }
 
-  // affichage
-  // affichage dans le dom
-  let bestT = document.getElementById("time");
-  bestT.textContent = `${bestTime[0]}min ${bestTime[1]}s`
-}
+//   // affichage
+//   // affichage dans le dom
+//   let bestT = document.getElementById("time");
+//   bestT.textContent = `${bestTime[0]}min ${bestTime[1]}s`
+// }
 
 function maj_score(){
   var element = document.getElementById("score");
