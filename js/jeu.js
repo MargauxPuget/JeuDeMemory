@@ -6,8 +6,6 @@
 let contenu_cartes = [];
 // listes des cartes retounées (max 2)
 let cartes_retournees = [];
-// Nb de pair trouvées
-let score = 0;
 // récupération des données des cartes "img" dans le tableau "cards"
 let img_cartes = document.getElementById("cartes").getElementsByTagName("img");
 
@@ -41,7 +39,7 @@ btn8.addEventListener("click", function(){creationPlateau(4, 4)});
 btn10.addEventListener("click", function(){creationPlateau(4, 5)});
 btn12.addEventListener("click", function(){creationPlateau(4, 6)});
 btn15.addEventListener("click", function(){creationPlateau(5, 6)});
-btn18.addEventListener("click", function(){creationPlateau(6, 6)});
+btn18.addEventListener("click", function(){creationPlateau(4, 9)});
 
 
 //-----------------//
@@ -62,6 +60,9 @@ function nb_aleatoire(nb){
 function initialiseJeu(nbCartes){
   // réinitialisation
   score = 0;
+  let scoreMax = document.getElementById("scoreMax");
+  console.log(scoreMax);
+  scoreMax.innerHTML = nbCartes/2;
   // création des cartes nécéssaire à la partie
   let numero_cartes = [];
   for (let i = 0 ; i<(nbCartes/2) ; i++){
@@ -169,40 +170,18 @@ function gagne(){
   postScore(parseInt(minutes)*60 + parseInt(secondes));
 }
 
-// // fonction qui compare le temps de la partie qui vient de finir à la meilleur
-// function compareBestTime(){
-
-//   // si aucune partie n'a était gagnée au paravent
-//   if ((bestTime[0] === "") && (bestTime[1] === "")){
-//     bestTime[0] = minutes;
-//     bestTime[1] = secondes;
-//   }
-//   if (minutes < bestTime[0]) {
-//     bestTime[0] = minutes;
-//     bestTime[1] = secondes;
-//   } 
-//   if (minutes === bestTime[0]) {
-//     if (secondes < bestTime[1]){
-//       bestTime[0] = minutes;
-//       bestTime[1] = secondes;
-//     }
-//   }
-
-//   // affichage
-//   // affichage dans le dom
-//   let bestT = document.getElementById("time");
-//   bestT.textContent = `${bestTime[0]}min ${bestTime[1]}s`
-// }
-
-function maj_score(){
+function maj_score(score){
   var element = document.getElementById("score");
-  element.textContent =score;
+  element.textContent = score;
 }
 
 // function permettant de terminer la partie et de rejouer
 function rejouer(){
   //location.reload()
-
+  maj_score(0);
+  let scoreMax = document.getElementById("scoreMax");
+  console.log(scoreMax);
+  scoreMax.innerHTML = "?";
   effacerPlateau(); 
 }
 
@@ -231,7 +210,7 @@ function controlJeu(num_carte, nbCartes){
         // => score augmente 
         nouvel_etat = -1;
         score++;
-        maj_score();
+        maj_score(score);
       }
       // on change l'état des cartes si nécéssaire
       etats_des_cartes[cartes_retournees[0]]= nouvel_etat;
@@ -279,8 +258,8 @@ function demarrerTemps(){
     minutes = "0" + minutes;
   }
 
-  // le chrono nous coup à 1 minute et 0 seconde
-  if((minutes === "01") && (secondes === "01")){
+  // le chrono nous coup à 2 minute et 0 seconde
+  if((minutes === "02") && (secondes === "01")){
     perdu();
   }
 
