@@ -2,33 +2,17 @@
 //--- Variables nécéssaires au jeu de mémory ---//
 //----------------------------------------------//
 
-// ensemble des numéros des cartes
-let numero_cartes = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
-//let numero_cartes = ["abricot", "abricot", "banane", "banane", "brugnion", "brugnion", "cerise-jaune", "cerise-jaune", "cerise-rouge", "cerise-rouge", "citron-jaune", "citron-jaune"];
 // cartes du jeu => départ vide
 let contenu_cartes = [];
-// Etat ds cartes = par défaut elles sont retournées
-// retournée = 0
-// visible = 1
-// les cartes des paires déjà trouvées seront à -1
-let etats_des_cartes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 // listes des cartes retounées (max 2)
 let cartes_retournees = [];
 // Nb de pair trouvées
 let score = 0;
 //tableau du meilleur temps [minutes, secondes]
 let bestTime = ["",""];
-
 // récupération des données des cartes "img" dans le tableau "cards"
 let img_cartes = document.getElementById("cartes").getElementsByTagName("img");
-// On boucle sur chaque cartes pour attribuer un numéro et la fonction de gestion en cas de click
-for(var i=0 ; i<img_cartes.length; i++)
-{
-  // ajout de la propriété num_carte à l'objet img
-  img_cartes[i].num_carte = i;
-  // ajout pour la carte de l'appel à la fonction de contrôle en cas de clic
-  img_cartes[i].onclick = function(){controlJeu(this.num_carte);};
-}
+
 
 //---------------------------------------------------//
 //--- Variables nécéssaires au chronomètre du jeu ---//
@@ -77,10 +61,35 @@ function nb_aleatoire(nb){
   return nombre;
 }
 
-function initialiseJeu(){
+function initialiseJeu(nbCartes){
   // réinitialisation
   score = 0;
-  etats_des_cartes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  // création des cartes nécéssaire à la partie
+  let numero_cartes = [];
+  for (let i = 0 ; i<(nbCartes/2) ; i++){
+    numero_cartes.push(i);
+    numero_cartes.push(i);
+  }
+
+  // initialisation et remplissage du tableau d'états des cartes.
+  // Etat ds cartes = par défaut elles sont retournées
+  // retournée = 0
+  // visible = 1
+  // les cartes des paires déjà trouvées seront à -1
+  etats_des_cartes = [];
+  for (let i = 0 ; i<nbCartes ; i++){
+    etats_des_cartes.push(0);
+  }
+
+  // On boucle sur chaque cartes pour attribuer un numéro et la fonction de gestion en cas de click
+  for(var i=0 ; i<img_cartes.length; i++)
+  {
+    // ajout de la propriété num_carte à l'objet img
+    img_cartes[i].num_carte = i;
+    // ajout pour la carte de l'appel à la fonction de contrôle en cas de clic
+    img_cartes[i].onclick = function(){controlJeu(this.num_carte, nbCartes);};
+  }
+
   contenu_cartes = [];
   clearTimeout(timeout);
   secondes=0;
@@ -159,7 +168,7 @@ function gagne(){
   // On arret le chrono
   chronoEstArrete = true;
 
-  compareBestTime();
+  postScore(parseInt(minutes)*60 + parseInt(secondes));
 }
 
 // fonction qui compare le temps de la partie qui vient de finir à la meilleur
@@ -174,7 +183,6 @@ function compareBestTime(){
     bestTime[0] = minutes;
     bestTime[1] = secondes;
   } 
-  console.log("bestTime", bestTime[0], bestTime[1]);
   if (minutes === bestTime[0]) {
     if (secondes < bestTime[1]){
       bestTime[0] = minutes;
@@ -184,7 +192,6 @@ function compareBestTime(){
 
   // affichage
   // affichage dans le dom
-
   let bestT = document.getElementById("time");
   bestT.textContent = `${bestTime[0]}min ${bestTime[1]}s`
 }
@@ -198,10 +205,10 @@ function maj_score(){
 function rejouer(){
   //location.reload()
 
-  initialiseJeu(); 
+  effacerPlateau(); 
 }
 
-function controlJeu(num_carte){
+function controlJeu(num_carte, nbCartes){
   // Si on a mois de 2 cartes retournée (sinon le programme attend le setTimeout)
   // On a donc aucune carte retorunée ou une seule
   if (cartes_retournees.length<2)
@@ -239,7 +246,7 @@ function controlJeu(num_carte){
         maj_affichage(cartes_retournees[0]);
         maj_affichage(cartes_retournees[1]);
         cartes_retournees=[];
-        if(score === 6){
+        if(score === (nbCartes/2)){
           // si on a atteint le score maxi (6 paires)
           // => on fini le partie et on rejoue
           gagne();
@@ -285,11 +292,17 @@ function demarrerTemps(){
   timeout = setTimeout(demarrerTemps, 1000);
 }
 
+function effacerPlateau(){
+  let parent = document.getElementById("cartes");
+  //suppression de tous les enfants.
+  parent.innerHTML='';
+}
+
 function creationPlateau(lignes, colonnes){
 
   let parent = document.getElementById("cartes");
   //suppression de tous les enfants.
-  parent.innerHTML='';
+  effacerPlateau();
 
   for(var i=0 ; i<lignes; i++)
   {
@@ -319,7 +332,51 @@ function creationPlateau(lignes, colonnes){
     var ligneAjoute = parent.appendChild(nouvelleLigne);
   }
 
-  initialiseJeu();
+  nbCartes = lignes * colonnes;
+  initialiseJeu(nbCartes);
 }
 
-//initialiseJeu();
+// récupération et affichahge du meilleur score de la base de donnée
+function recupBDD(){
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      let results =  JSON.parse(this.responseText);
+      if(results.length>0){
+        document.getElementById("time").innerHTML = majTiming(results[0].score);
+      }
+    }
+  };
+
+  xhttp.open("GET", "../api/leaderboard.php", true);
+  xhttp.send();
+}
+
+function majTiming(time){
+  // trouver les minutes
+  let minutes = Math.trunc(time/60);
+  // trouver les secondes
+  let secondes = time%60;
+  return minutes + " min " + secondes + " s ! ";
+}
+
+// envoye d'un nouveau score en base de donnée
+function postScore(scoreValue) {
+  var paramObj = { score: scoreValue };
+  var params = Object.keys(paramObj).map(
+    function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(paramObj[k]) }
+  ).join('&');
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', "../api/leaderboard.php");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState>3 && xhr.status==200) { 
+      recupBDD();
+    }
+  };
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.send(params);
+  return xhr;
+}
+
+recupBDD();
