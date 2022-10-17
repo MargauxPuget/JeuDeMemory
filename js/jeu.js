@@ -261,13 +261,14 @@ function demarrerTemps(){
   timeout = setTimeout(demarrerTemps, 1000);
 }
 
+// récupération et affichahge du meilleur score de la base de donnée
 function recupBDD(){
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       let results =  JSON.parse(this.responseText);
       if(results.length>0){
-        document.getElementById("time").innerHTML = results[0].score + " secondes";
+        document.getElementById("time").innerHTML = majTiming(results[0].score);
       }
     }
   };
@@ -276,6 +277,16 @@ function recupBDD(){
   xhttp.send();
 }
 
+function majTiming(time){
+  // trouver les minutes
+  let minutes = Math.trunc(time/60);
+  // trouver les secondes
+  let secondes = time%60;
+  return minutes + " min " + secondes + " s ! ";
+}
+
+
+// envoye d'un nouveau score en base de donnée
 function postScore(scoreValue) {
   var paramObj = { score: scoreValue };
   var params = Object.keys(paramObj).map(

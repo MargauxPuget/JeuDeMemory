@@ -1,4 +1,6 @@
 <?php
+// donnée pour la connection
+
 $dataSourceName = 'mysql:dbname=memory;host=localhost;charset=UTF8';
 $user = "memory";
 $password = "memory";

@@ -1,5 +1,7 @@
 <?php
 
+// requete à la base de donnée
+
 require_once('connect_db.php');
 
 $isGet= $_SERVER['REQUEST_METHOD'] === 'GET';

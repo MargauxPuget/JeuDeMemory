@@ -1,4 +1,5 @@
 <?php
+// permet de se connecter à la base de donnée
 
 require_once('config.php');
 
